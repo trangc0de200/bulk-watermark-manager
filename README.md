@@ -1,70 +1,107 @@
 # Bulk Watermark Manager
 
-A WordPress plugin for applying watermarks to images in your Media Library — individually or in bulk. Features include real-time preview, adjustable watermark positioning and opacity, automatic backup of originals, and a clean, modern admin interface.
+<!-- Markdown HTML comment used to hide line below from table of contents auto-generators: x -->
+<!-- prettier-ignore -->
+<p align="center">
+  <a href="https://wordpress.org/plugins/bulk-watermark-manager/">
+    <img src="https://img.shields.io/badge/WordPress-5.0%2B-blue?style=for-the-badge&logo=wordpress" alt="WordPress" />
+  </a>
+  <a href="https://www.php.net/releases/7_4.php">
+    <img src="https://img.shields.io/badge/PHP-7.4%2B-8892BF?style=for-the-badge&logo=php" alt="PHP" />
+  </a>
+  <a href="https://www.gnu.org/licenses/gpl-2.0.html">
+    <img src="https://img.shields.io/badge/License-GPL%202.0-green?style=for-the-badge" alt="License" />
+  </a>
+  <a href="https://github.com/TrangDev/bulk-watermark-manager/releases">
+    <img src="https://img.shields.io/badge/Version-1.0.0-orange?style=for-the-badge" alt="Version" />
+  </a>
+</p>
+
+> Batch watermark images in your WordPress Media Library with a modern, intuitive interface. Select images, configure your watermark, preview the result, and apply — all without leaving WordPress admin.
+
+---
+
+## Screenshots
+
+| Main Interface | Watermark Configuration | Live Preview |
+|:---:|:---:|:---:|
+| ![Main Interface](https://via.placeholder.com/400x300/1a5f3c/ffffff?text=Main+Interface) | ![Configuration Panel](https://via.placeholder.com/400x300/0d395e/ffffff?text=Configuration) | ![Live Preview](https://via.placeholder.com/400x300/27ae60/ffffff?text=Live+Preview) |
+
+> _Screenshots coming soon — the plugin is actively maintained._
 
 ---
 
 ## Table of Contents
 
 - [Features](#features)
+- [Quick Start](#quick-start)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
-- [How It Works](#how-it-works)
-- [File Structure](#file-structure)
+- [Technical Reference](#technical-reference)
 - [Hooks & Metadata](#hooks--metadata)
-- [Security Notes](#security-notes)
+- [Security](#security)
+- [Contributing](#contributing)
 - [Changelog](#changelog)
+- [License](#license)
 
 ---
 
 ## Features
 
-- **Bulk watermarking** — Select one or many images from your Media Library and apply a watermark to all of them in one click.
-- **Live canvas preview** — See exactly how the watermark will look on your image before committing, with real-time updates as you adjust settings.
-- **9-position placement** — Pin the watermark to any of 9 positions: top/middle/bottom × left/center/right.
-- **Adjustable size** — Control watermark size as a percentage (5–80%) of the base image width.
-- **Opacity control** — Set watermark transparency from 10% to 100%.
-- **Padding control** — Define the distance from the image edge (0–60 px).
-- **Automatic backup** — Optionally save a `_orig` copy of each image before modifying it.
-- **Smart filtering** — Filter images by upload month or by watermark status (watermarked / not watermarked).
-- **Search** — Find images by title/filename with a debounced search field.
-- **Paginated grid** — Loads 32 images at a time with a "Load more" button to keep the interface fast.
-- **Progress tracking** — A progress bar and per-image log show real-time status during batch processing.
-- **Watermark status badge** — A green checkmark badge overlays images that have already been watermarked.
-- **WordPress Media Picker** — Watermark images are selected using the native WordPress Media Library picker.
+| Feature | Description |
+|---|---|
+| **Bulk Processing** | Apply watermarks to hundreds of images simultaneously |
+| **Live Preview** | Canvas-based real-time preview updates as you adjust settings |
+| **9 Position Anchors** | Place watermarks at any corner, edge, or center |
+| **Fine-Tuned Controls** | Adjustable size (5–80%), opacity (10–100%), and edge padding (0–60px) |
+| **Original Backups** | Automatically save `_orig` copies before modifying images |
+| **Smart Filtering** | Filter by upload date or watermark status |
+| **Search** | Find images by title or filename with debounced search |
+| **Progress Tracking** | Real-time progress bar and per-image success/error log |
+| **Watermark Badges** | Visual indicator on already-watermarked images |
+| **WP Media Picker** | Select watermark images using the native WordPress picker |
+
+---
+
+## Quick Start
+
+```
+1. Install & activate the plugin
+2. Go to Media → Watermark Manager
+3. Select images from the grid
+4. Choose a watermark image
+5. Adjust position, size, opacity, and padding
+6. Preview on canvas, then click Apply
+```
 
 ---
 
 ## Requirements
 
-| Requirement | Details |
-|---|---|
-| **WordPress** | 5.0 or higher |
-| **PHP** | 7.4 or higher |
-| **PHP GD extension** | Required for server-side image processing (`imagecreatefromjpeg`, `imagecopy`, etc.) |
-| **User capability** | `upload_files` (typically Editors and Administrators) |
+| Dependency | Minimum Version | Notes |
+|---|---|---|
+| **WordPress** | 5.0 | Tested up to the latest stable release |
+| **PHP** | 7.4 | GD extension must be enabled |
+| **PHP GD extension** | — | Used for all server-side image operations |
+| **User role** | Editor+ | Requires `upload_files` capability |
 
-### Checking the GD extension
+### Verify GD is installed
 
 ```bash
-php -m | grep gd
+php -m | grep -i gd
 ```
 
-Or add this to a temporary PHP file:
-
-```php
-<?php phpinfo(INFO_MODULES);
-```
+Expected output contains `gd`.
 
 If GD is missing, install it:
 
 ```bash
 # Debian / Ubuntu
-sudo apt install php-gd
+sudo apt install php-gd && sudo systemctl restart php-fpm
 
-# CentOS / AlmaLinux
-sudo dnf install php-gd
+# CentOS / AlmaLinux / RHEL
+sudo dnf install php-gd && sudo systemctl restart php-fpm
 
 # macOS (Homebrew)
 brew install php && brew services restart php
@@ -74,126 +111,120 @@ brew install php && brew services restart php
 
 ## Installation
 
-### Method 1: Upload via WordPress Admin
+### Option 1 — WordPress Admin Upload
 
-1. Download or clone this repository.
-2. Zip the plugin folder.
-3. Go to **Plugins → Add New → Upload Plugin**.
-4. Upload the zip file and click **Install Now**.
-5. Activate the plugin.
-6. Navigate to **Media → Watermark Manager**.
+1. Download the repository as a ZIP file.
+2. Navigate to **Plugins → Add New → Upload Plugin**.
+3. Upload the ZIP and click **Install Now**.
+4. Activate the plugin.
+5. Go to **Media → Watermark Manager**.
 
-### Method 2: FTP / File Manager
+### Option 2 — FTP / File Manager
 
 1. Upload the `bulk-watermark-manager` folder to `/wp-content/plugins/`.
-2. Go to **Plugins** in your WordPress admin and activate **Bulk Watermark Manager**.
-3. Navigate to **Media → Watermark Manager**.
+2. Activate via **Plugins** in your WordPress admin.
+3. Go to **Media → Watermark Manager**.
 
-### Method 3: WP-CLI
+### Option 3 — WP-CLI
 
 ```bash
-wp plugin install --activate /path/to/bulk-watermark-manager
+wp plugin install --activate /absolute/path/to/bulk-watermark-manager
 ```
 
 ---
 
 ## Usage
 
-### Step 1 — Open the Plugin
+### Selecting Images
 
-In your WordPress admin, go to **Media → Watermark Manager**.
+- **Individual selection** — Click any image in the grid to toggle its selection. A green border and checkmark indicate selected items.
+- **Bulk selection** — Use **Select All** / **Deselect** in the toolbar.
+- The header counter updates in real time as you select or deselect.
 
-### Step 2 — Select Images
+### Filtering & Searching
 
-- Click individual images in the grid to select or deselect them.
-- Use **Select All** / **Deselect** in the toolbar for quick bulk selection.
-- The counter in the header updates in real time.
+| Control | Purpose |
+|---|---|
+| **Search box** | Filter by image title or filename (debounced, 350ms) |
+| **Date filter** | Show images uploaded in a specific month |
+| **Status filter** | Show only watermarked or non-watermarked images |
 
-### Step 3 — Filter & Search (Optional)
+### Configuring Watermarks
 
-- Use the search box to find images by title or filename.
-- Filter by **upload month** or **watermark status** using the dropdowns.
+Click **Set Watermark (N)** to open the configuration panel:
 
-### Step 4 — Configure Watermark
+| Setting | Range | Default | Effect |
+|---|---|---|---|
+| **Watermark Image** | Any image from Media Library | — | Source of the watermark overlay |
+| **Position** | 9 anchors (3×3 grid) | Bottom-right | Where on the image the watermark is placed |
+| **Size** | 5–80% | 25% | Watermark width as a percentage of base image |
+| **Opacity** | 10–100% | 80% | Transparency level of the watermark |
+| **Edge Padding** | 0–60px | 10px | Distance from the nearest image edge |
+| **Save Original** | On/Off | On | Stores a `_orig` copy before overwriting |
 
-1. Click **Set Watermark (N)**.
-2. In the configuration panel:
-   - Click **Choose from Media** to pick a watermark image.
-   - Choose a **position** from the 3×3 grid.
-   - Adjust **size**, **opacity**, and **padding** with the sliders.
-   - Toggle **Save originals** if you want `_orig` backup copies.
+### Previewing
 
-### Step 5 — Preview
+The right-hand panel renders a live canvas preview using the first selected image. All slider changes reflect instantly — no save required to preview.
 
-The panel shows a live canvas preview based on the first selected image. Adjust sliders and watch the preview update instantly.
+### Applying
 
-### Step 6 — Apply
+Click **Apply to N images**. The progress overlay shows:
 
-Click **Apply to N images**. A progress overlay tracks each image through completion, showing a success/error log per item.
+- An animated progress bar
+- A running count (`N / M`)
+- A scrollable log with per-image success (`OK`) or failure (`FAIL`) entries
 
----
-
-## How It Works
-
-### Image Loading (AJAX)
-
-When the page loads or filters change, the front-end sends an AJAX request to `wp_ajax_bwm_load_images`. The server queries `WP_Query` for image attachments, optionally filtered by search term, upload month, or watermark metadata. Results are paginated at 32 per page.
-
-### Watermark Application (AJAX)
-
-Each selected image is processed individually via `wp_ajax_bwm_apply_watermark`:
-
-1. The base image and watermark image are loaded using PHP GD functions.
-2. The watermark is resized proportionally to the configured size percentage.
-3. Opacity is applied via pixel-level alpha manipulation on the resized watermark.
-4. The watermark is composited onto the base image at the calculated position.
-5. The modified image is saved back to the original file (JPEG 92%, PNG 6, WebP 90%).
-6. `_bwm_watermarked` and `_bwm_wm_id` post meta are set on the attachment.
-7. `wp_update_attachment_metadata` regenerates WordPress image sizes.
-
-### Preview Rendering (Client-side Canvas)
-
-Before applying, the browser draws a live preview on an HTML `<canvas>` element using the Canvas 2D API. This is purely cosmetic and does not affect the server-side processing.
+After completion, the grid updates in place and the watermark badge appears on processed images.
 
 ---
 
-## File Structure
+## Technical Reference
+
+### Image Loading Flow
 
 ```
-bulk-watermark-manager/
-├── bulk-watermark-manager.php   # Main plugin file — admin menu, AJAX handlers, rendering
-├── assets/
-│   ├── script.js                # Front-end: state management, grid, preview, AJAX batching
-│   └── style.css                # Admin UI styles — header, toolbar, grid, panel, progress
-└── README.md                    # This file
+Page Load / Filter Change
+       │
+       ▼
+$.post( 'wp_ajax_bwm_load_images' )
+       │
+       ▼
+WP_Query( post_type=attachment, mime_type=image, ... )
+       │
+       ▼
+Post meta _bwm_watermarked merged into results
+       │
+       ▼
+Paginated JSON response (32 items/page)
+       │
+       ▼
+Grid renders with selection state
 ```
 
-### `bulk-watermark-manager.php`
+### Watermark Processing Flow
 
-- Defines plugin constants (`BWM_VERSION`, `BWM_DIR`, `BWM_URL`).
-- Registers the admin menu item under **Media**.
-- Enqueues `style.css` and `script.js` only on the plugin's page.
-- Renders the full admin UI (header, toolbar, image grid, watermark panel, progress overlay).
-- Handles two AJAX actions:
-  - `bwm_load_images` — paginated image listing.
-  - `bwm_apply_watermark` — server-side watermark compositing.
-- Contains the helper function `bwm_parse_position()`.
+```
+User clicks "Apply to N images"
+       │
+       ▼
+Sequential $.post() per attachment_id
+       │
+       ├──► PHP GD: imagecreatefromjpeg / png / webp
+       ├──► PHP GD: resize watermark proportionally
+       ├──► PHP GD: alpha manipulation for opacity
+       ├──► PHP GD: imagecopy onto base at position
+       ├──► PHP GD: imagejpeg / imagepng / imagewebp
+       ├──► update_post_meta( _bwm_watermarked )
+       ├──► wp_update_attachment_metadata()
+       └──► JSON response { url: "...?v=timestamp" }
+```
 
-### `assets/script.js`
+### Supported Image Formats
 
-- Manages client-side state (selected images, filters, watermark settings).
-- Binds event listeners for selection, filtering, sliders, and the media picker.
-- Implements debounced search.
-- Draws the live canvas preview.
-- Sends watermark requests sequentially (one at a time) to avoid server overload.
-
-### `assets/style.css`
-
-- Custom properties for the plugin's green/navy color palette.
-- Styles for the gradient header, toolbar, square image grid, selection states.
-- Watermark configuration panel with two-column layout (settings + preview).
-- Progress overlay with animated progress bar and log area.
-- Loading skeleton shimmer animation.
+| Role | JPEG | PNG | WebP |
+|---|---|---|---|
+| **Base image** | ✅ | ✅ | ✅ |
+| **Watermark image** | ✅ | ✅ | ✅ |
 
 ---
 
@@ -201,50 +232,75 @@ bulk-watermark-manager/
 
 ### Post Meta
 
-The plugin stores metadata on each watermarked attachment:
-
-| Meta Key | Type | Description |
+| Key | Type | Description |
 |---|---|---|
-| `_bwm_watermarked` | `int (0/1)` | Whether the image has been watermarked |
+| `_bwm_watermarked` | `int` (0 or 1) | Whether the attachment has been watermarked |
 | `_bwm_wm_id` | `int` | WordPress attachment ID of the watermark image used |
 
 ### AJAX Actions
 
-| Action | Callback | Description |
+| Action | Callback | Auth |
 |---|---|---|
-| `bwm_load_images` | `wp_ajax_bwm_load_images` | Fetch paginated image list |
-| `bwm_apply_watermark` | `wp_ajax_bwm_apply_watermark` | Apply watermark to one image |
+| `bwm_load_images` | `wp_ajax_bwm_load_images` | Nonce only |
+| `bwm_apply_watermark` | `wp_ajax_bwm_apply_watermark` | Nonce + `upload_files` capability |
 
 ### Nonce
 
-All AJAX requests are secured with a WordPress nonce (`bwm_nonce`) verified via `wp_verify_nonce`. The nonce is created with `wp_create_nonce('bwm_nonce')` and localized as `BWM.nonce`.
+All AJAX requests include `BWM.nonce`, verified server-side with `wp_verify_nonce()`. The nonce is initialized via `wp_create_nonce('bwm_nonce')` and passed to JavaScript through `wp_localize_script()`.
 
 ---
 
-## Security Notes
+## Security
 
-- All AJAX endpoints verify the WordPress nonce.
-- `current_user_can('upload_files')` is checked before processing watermarks.
-- All user inputs are sanitized: `sanitize_text_field()`, `intval()`, `floatval()`.
-- File existence and MIME type are validated server-side before any GD operations.
-- The plugin only runs when `ABSPATH` is defined, preventing direct access.
+- `ABSPATH` guard prevents direct file access.
+- All AJAX endpoints verify the WordPress nonce before processing.
+- `current_user_can('upload_files')` gates watermark application.
+- Input sanitization: `sanitize_text_field()`, `intval()`, `floatval()` on all user-supplied values.
+- MIME type and file existence validated server-side before GD operations.
+
+---
+
+## Contributing
+
+Contributions are welcome. Please follow these guidelines:
+
+1. **Fork** the repository and create a feature branch (`feature/your-feature-name`).
+2. **Write clean, readable code** — follow the existing style.
+3. **Test thoroughly** on a local WordPress installation before submitting.
+4. **Commit with clear messages** — use conventional commit format.
+5. **Open a Pull Request** against `main` with a description of your changes.
+
+For bug reports and feature requests, open an issue on GitHub.
 
 ---
 
 ## Changelog
 
-### 1.0.0
-- Initial release.
-- Bulk watermark application to Media Library images.
-- Live canvas preview.
-- 9-position placement with size, opacity, and padding controls.
-- Original image backup (`_orig` suffix).
-- Search, month filter, and watermark-status filter.
+All notable changes are documented below. This project follows [Keep a Changelog](https://keepachangelog.com/) conventions.
+
+### [1.0.0](https://github.com/TrangDev/bulk-watermark-manager/releases/tag/1.0.0) — 2024
+
+#### Added
+- Bulk watermark application to Media Library images with sequential AJAX processing.
+- Live canvas preview with real-time slider updates.
+- 9-position placement grid (top/middle/bottom × left/center/right).
+- Size, opacity, and edge padding controls.
+- Automatic original image backup with `_orig` suffix.
+- Image search, date filter, and watermark-status filter.
 - Watermark status badge on processed images.
-- Progress bar and per-image error log.
+- Progress bar with per-image success/error log.
+- Native WordPress Media Library picker for watermark selection.
+- Support for JPEG, PNG, and WebP base and watermark images.
+- Responsive admin UI with loading skeleton and smooth transitions.
 
 ---
 
 ## License
 
-GPL-2.0+
+[GPL-2.0](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html) © Trang Dev
+
+---
+
+<p align="center">
+  Built with care for the WordPress community
+</p>
